@@ -30,6 +30,7 @@ struct ConfigData {
     pub balance: Table,
     pub performance: Table,
     pub fast: Table,
+    pub pedestal: Table,
 }
 
 impl Config {
@@ -53,6 +54,7 @@ impl Config {
                 balance: std_conf.balance,
                 performance: std_conf.performance,
                 fast: std_conf.fast,
+                pedestal: std_conf.pedestal,
             };
             return Ok(toml::to_string(&new_conf)?);
         }
@@ -62,6 +64,7 @@ impl Config {
         let balance = Self::table_merge(std_conf.balance, local_conf.balance);
         let performance = Self::table_merge(std_conf.performance, local_conf.performance);
         let fast = Self::table_merge(std_conf.fast, local_conf.fast);
+        let pedestal = Self::table_merge(std_conf.pedestal, local_conf.pedestal);
 
         let new_conf = ConfigData {
             config,
@@ -70,6 +73,7 @@ impl Config {
             balance,
             performance,
             fast,
+            pedestal,
         };
 
         Ok(toml::to_string(&new_conf)?)

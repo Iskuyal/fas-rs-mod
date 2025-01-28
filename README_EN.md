@@ -1,15 +1,13 @@
 <div align="center">
 
-<img src="https://github.com/shadow3aaa/fas-rs/raw/refs/heads/master/assets/icon.svg" width="160" height="160" style="display: block; margin: 0 auto;" alt="SVG Image">
+<img src="assets/icon.svg" width="160" height="160" style="display: block; margin: 0 auto;" alt="SVG Image">
 
-# **fas-rs**
+# **🐶fas-rs-mod🐶**
 
-### Frame aware scheduling for android
+### Frame aware scheduling for android, work with scene tuner.
 
 [![简体中文][readme-cn-badge]][readme-cn-url]
 [![Stars][stars-badge]][stars-url]
-[![CI Build][ci-badge]][ci-url]
-[![Release][release-badge]][release-url]
 [![Download][download-badge]][download-url]
 [![Telegram][telegram-badge]][telegram-url]
 
@@ -19,16 +17,12 @@
 
 [readme-cn-badge]: https://img.shields.io/badge/README-简体中文-blue.svg?style=for-the-badge&logo=readme
 [readme-cn-url]: README.md
-[stars-badge]: https://img.shields.io/github/stars/shadow3aaa/fas-rs?style=for-the-badge&logo=github
-[stars-url]: https://github.com/shadow3aaa/fas-rs
-[ci-badge]: https://img.shields.io/github/actions/workflow/status/shadow3aaa/fas-rs/ci.yml?style=for-the-badge&label=CI%20Build&logo=githubactions
-[ci-url]: https://github.com/shadow3aaa/fas-rs/actions/workflows/ci.yml
-[release-badge]: https://img.shields.io/github/v/release/shadow3aaa/fas-rs?style=for-the-badge&logo=rust
-[release-url]: https://github.com/shadow3aaa/fas-rs/releases/latest
-[download-badge]: https://img.shields.io/github/downloads/shadow3aaa/fas-rs/total?style=for-the-badge&logo=download
-[download-url]: https://github.com/shadow3aaa/fas-rs/releases/latest
-[telegram-badge]: https://img.shields.io/badge/Group-blue?style=for-the-badge&logo=telegram&label=Telegram
-[telegram-url]: https://t.me/fas_rs_official
+[stars-badge]: https://img.shields.io/github/stars/DdogezD/fas-rs-mod?style=for-the-badge&logo=github
+[stars-url]: https://github.com/DdogezD/fas-rs-mod
+[download-badge]: https://img.shields.io/github/downloads/DdogezD/fas-rs-mod/total?style=for-the-badge&logo=download
+[download-url]: https://github.com/DdogezD/fas-rs-mod/releases/latest
+[telegram-badge]: https://img.shields.io/badge/Group-blue?style=for-the-badge&logo=telegram&label=Telegram-Topic
+[telegram-url]: https://t.me/fas_rs_official/228
 
 ## **Introduction**
 
@@ -38,13 +32,20 @@
 
   - `fas-rs` is a user-space implementation of `FAS (Frame Aware Scheduling)`, which has the advantage of near-universal compatibility and flexibility on any device compared to the kernel-space `MI FEAS`.
 
+- ### **What is `fas-rs-mod`?**
+
+  - `fas-rs-mod` is an unofficial fork of `fas-rs`, including a slightly tweaked version of `fas-rs` and the "scene-patcher"- a script that attempts to patch `scene tuner`'s config to let it work together with `fas-rs`.
+  - After installed `fas-rs-mod`, games in `scene`'s game list will use `fas-rs`, while other apps will use `scene tuner`. `scene` features like "core allocation" and "cpu limiter" will still work, but the cpu limiter will not working in games.
+  - Extensions for `fas-rs` are mostly compatible with `fas-rs-mod`. But due to some changes in `fas-rs-mod`, you need to install those extension manually.
+
 ## **Extension System**
 
 - To maximize user-space flexibility, `fas-rs` has its own extension system. For development instructions, see the [extension template repository](https://github.com/shadow3aaa/fas-rs-extension-module-template).
+- With `fas-rs-mod` installed, please extract those extension and copy the `*.lua` script into `/data/adb/fas-rs/extensions` manually.
 
 ## **Customization (Configuration)**
 
-- ### **Configuration Path: `/sdcard/Android/fas-rs/games.toml`**
+- ### **Configuration Path: `/data/adb/fas-rs/games.toml`**
 
 - ### **Parameter (`config`) Description:**
 
@@ -53,12 +54,6 @@
     - Type: `bool`
     - `true`: Always keep the standard configuration profile when merging configurations, retaining the local configuration's application list, and other aspects are the same as false \*
     - `false`: See [default behavior of configuration merging](#configuration-merging)
-
-  - **scene_game_list**
-
-    - Type: `bool`
-    - `true`: Use scene game list \*
-    - `false`: Do not use scene game list
 
   - `*`: Default configuration
 
@@ -69,12 +64,12 @@
     - `package`: String, application package name
     - `target_fps`: An array (e.g., `[30, 60, 120, 144]`) or a single integer, representing the target frame rate the game will render to, `fas-rs` will dynamically match at runtime.
 
-- ### **Modes (`powersave` / `balance` / `performance` / `fast`) Description:**
+- ### **Modes (`powersave` / `balance` / `performance` / `fast` / `pedestal`) Description:**
 
   - #### **Mode Switching:**
 
-    - Currently, `fas-rs` does not have an official mode switching manager but integrates with the [`scene`](http://vtools.omarea.com) configuration interface. If you do not use scene, the default `balance` configuration is used.
-    - If you have some understanding of programming on Linux, you can switch to the corresponding mode by writing any of the 4 modes to the `/dev/fas_rs/mode` node, and you can also read it to know the current mode of `fas-rs`.
+    - `fas-rs-mod` relies on [`scene`](http://vtools.omarea.com). By patches scene's tuner configuration, `fas-rs` now work with `scene` seamlessly.
+    - If you have some understanding of programming on Linux, you can switch to the corresponding mode by writing any of the 5 modes to the `/data/adb/fas-rs/mode` node, and you can also read it to know the current mode of `fas-rs`.
 
   - #### **Mode Parameter Description:**
 
@@ -95,36 +90,29 @@
 ```toml
 [config]
 keep_std = true
-scene_game_list = true
 
 [game_list]
-"com.hypergryph.arknights" = [30, 60]
-"com.miHoYo.Yuanshen" = [30, 60]
-"com.miHoYo.enterprise.NGHSoD" = [30, 60, 90]
-"com.miHoYo.hkrpg" = [30, 60]
-"com.kurogame.mingchao" = [24, 30, 45, 60]
-"com.pwrd.hotta.laohu" = [25, 30, 45, 60, 90]
-"com.mojang.minecraftpe" = [60, 90, 120]
-"com.netease.party" = [30, 60]
-"com.shangyoo.neon" = 60
-"com.tencent.tmgp.pubgmhd" = [60, 90, 120]
-"com.tencent.tmgp.sgame" = [30, 60, 90, 120]
+"example.game" = [30, 45, 60, 90, 120, 144]
 
 [powersave]
-margin_fps = 3
+margin_fps = 6
 core_temp_thresh = 80000
 
 [balance]
-margin_fps = 1
+margin_fps = 4
 core_temp_thresh = 90000
 
 [performance]
-margin_fps = 0
+margin_fps = 2
 core_temp_thresh = 95000
 
 [fast]
 margin_fps = 0
 core_temp_thresh = 95000
+
+[pedestal]
+margin_fps = 1
+core_temp_thresh = "disabled"
 ```
 
 ## **Configuration Merging**
@@ -153,7 +141,10 @@ core_temp_thresh = 95000
 
 ```bash
 # Ubuntu (NDK is required)
-apt install gcc-multilib git-lfs
+apt install gcc-multilib git-lfs clang python3
+
+# ruff (Python lints & format)
+pip install ruff
 
 # Rust (Nightly version is required)
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -169,5 +160,7 @@ git clone https://github.com/shadow3aaa/fas-rs
 cd fas-rs
 
 # Compile
-cargo xtask build -r
+python3 ./make.py build --release
+# Use the `--nightly` option when building(Some nightly flags will be added to produce smaller artifacts)
+python3 ./make.py build --release --nightly
 ```

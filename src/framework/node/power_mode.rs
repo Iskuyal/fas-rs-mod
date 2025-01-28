@@ -12,6 +12,7 @@ pub enum Mode {
     Balance,
     Performance,
     Fast,
+    Pedestal,
 }
 
 impl FromStr for Mode {
@@ -23,6 +24,7 @@ impl FromStr for Mode {
             "balance" => Self::Balance,
             "performance" => Self::Performance,
             "fast" => Self::Fast,
+            "pedestal" => Self::Pedestal,
             _ => return Err(Error::ParseNode),
         })
     }
@@ -35,6 +37,7 @@ impl Display for Mode {
             Self::Balance => "balance",
             Self::Performance => "performance",
             Self::Fast => "fast",
+            Self::Pedestal => "pedestal",
         };
 
         write!(f, "{mode}")
